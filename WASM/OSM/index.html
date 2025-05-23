@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Map + WASM</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>#map { height: 500px; }</style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="map_module.js"></script>
+  <script>
+    createModule().then(Module => {
+      const map = L.map('map').setView([51.505, -0.09], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      map.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        console.log("Clicked at", lat, lng);
+
+        // Вызов C++ функции
+        Module.add_position(lat, lng);
+      });
+
+      // Пример чтения из вектора
+      window.showPositions = function() {
+        const vec = Module.get_positions();
+        for (let i = 0; i < vec.size(); ++i) {
+          const p = vec.get(i);
+          console.log(`(${p.lat}, ${p.lng})`);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

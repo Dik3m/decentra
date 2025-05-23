@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Drone Station</title>
+  <style>
+
+    html, body {margin: 0; height: 100%; overflow: hidden;}
+
+    .container {display: flex; flex-direction: column; height: 100%;}
+
+    canvas {width: 25%; height: auto;}
+    #div1 { display: flex;}
+    #left-canvas {flex: 1; background-color: #eee; display: block;}
+    #right-div {flex: 1; background-color: lightgreen;}
+    #div2 {flex: 1; background-color: lightblue;}
+
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+  
+    <div id="div1">
+      <div id="right-div"></div>
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    </div>
+
+    <div id="div2">Penis!</div>
+
+  </div>
+
+  <script type='text/javascript'>
+
+      var statusElement = document.getElementById('status');
+      var progressElement = document.getElementById('progress');
+      var spinnerElement = document.getElementById('spinner');
+      var canvasElement = document.getElementById('canvas');
+      var outputElement = document.getElementById('output');
+      if (outputElement) outputElement.value = '';
+      canvasElement.addEventListener('webglcontextlost', (e) => {
+        alert('WebGL context lost. You will need to reload the page.');
+        e.preventDefault();
+      }, false);
+
+      var Module = {
+        print(...args) {
+          console.log(...args);
+          if (outputElement) {
+            var text = args.join(' ');
+            outputElement.value += text + "\n";
+            outputElement.scrollTop = outputElement.scrollHeight;
+          }
+        },
+        canvas: canvasElement,
+        
+      };
+      window.onerror = (event) => {};
+
+    </script>
+
+<script>
+  const textarea = document.getElementById("output");
+  const originalLog = console.log;
+  console.log = function(...args) {
+    textarea.value += args.map(arg => String(arg)).join(' ') + '\n';
+    textarea.scrollTop = textarea.scrollHeight;
+    originalLog.apply(console, args);
+  };
+</script>
+
+<script async type="text/javascript" src="penis.js"></script>
+
+</body>
+</html>
